@@ -65,6 +65,26 @@ QMenu* MainWindow::generateFileMenu() {
 QMenu* MainWindow::generateEditMenu() {
     auto editMenu = new QMenu{tr("Правка")};
 
+    auto cutAction = new QAction{tr("Вырезать"), this};
+    cutAction->setShortcut(QKeySequence::Cut);
+    editMenu->addAction(cutAction);
+
+    auto copyAction = new QAction{tr("Копировать"), this};
+    copyAction->setShortcut(QKeySequence::Copy);
+    editMenu->addAction(copyAction);
+
+    auto insertAction = new QAction{tr("Вставить"), this};
+    insertAction->setShortcut(QKeySequence::InsertLineSeparator);
+    editMenu->addAction(insertAction);
+
+    auto deleteAction = new QAction{tr("Удалить"), this};
+    deleteAction->setShortcut(QKeySequence::Delete);
+    editMenu->addAction(deleteAction);
+
+    auto selectAllAction = new QAction{tr("Выделить все"), this};
+    selectAllAction->setShortcut(QKeySequence::SelectAll);
+    editMenu->addAction(selectAllAction);
+
     return editMenu;
 }
 
