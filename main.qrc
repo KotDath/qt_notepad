@@ -1,0 +1,23 @@
+<!DOCTYPE RCC>
+<RCC>
+    <qresource>
+        <file alias="close_button.png">src/images/close_button.png</file>
+        <file alias="not_saved_button.png">src/images/not_saved_button.png</file>
+        <file alias="add_file_button.png">src/images/add_file_button.png</file>
+        <file alias="add_file_button_hover.png">src/images/add_file_button_hover.png</file>
+
+        <file alias="down_arrow_button.png">src/images/arrows/down_arrow_button.png</file>
+        <file alias="down_arrow_button_hover.png">src/images/arrows/down_arrow_button_hover.png</file>
+
+        <file alias="left_arrow_button.png">src/images/arrows/left_arrow_button.png</file>
+        <file alias="left_arrow_button_hover.png">src/images/arrows/left_arrow_button_hover.png</file>
+
+        <file alias="right_arrow_button.png">src/images/arrows/right_arrow_button.png</file>
+        <file alias="right_arrow_button_hover.png">src/images/arrows/right_arrow_button_hover.png</file>
+
+        <file alias="logo.png">src/images/logo.png</file>
+        <file>src/styles/text_edit.qss</file>
+        <file>src/styles/tab_widget.qss</file>
+    </qresource>
+</RCC>
+
