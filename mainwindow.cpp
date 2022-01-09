@@ -1,12 +1,12 @@
 #include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), currentEdit(nullptr), modelNames(), highlighter(new Highlighter{}) {
+    : QMainWindow(parent), currentEdit(nullptr), modelNames(), highlighter(new Highlighter{nullptr, "../qt_notepad/templates/main.majin"}) {
 
     auto mainWidget = new QWidget{this};
     setCentralWidget(mainWidget);
 
-    setWindowTitle("Sublime Text");
+    setWindowTitle("Majin Text");
     resize(800, 600);
     setWindowIcon(QIcon(":/logo.png"));
 

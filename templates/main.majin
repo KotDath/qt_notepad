@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<settings>
+    <syntaxes>
+        <syntax id="cpp" name="Язык программирования C++" ext_list="cpp">
+            <!-- Однострочный комментарий -->
+            <rule>
+                <pattern value = "//[^\n]*"/>
+                <format foreground="#808080" font_weight="50"/>
+            </rule>
+            <rule>  
+                <pattern value = "\balignas\b"/>
+                <pattern value = "\balignof\b"/>
+                <pattern value = "\band\b"/>
+                <pattern value = "\band_eq\b"/>
+                <pattern value = "\basm\b"/>
+                <pattern value = "\bauto\b"/>
+                <pattern value = "\bbitand\b"/>
+                <pattern value = "\bbitor\b"/>
+                <pattern value = "\bbool\b"/>
+                <pattern value = "\bbreak\b"/>
+                <pattern value = "\bcase\b"/>
+                <pattern value = "\bcatch\b"/>
+                <pattern value = "\bchar\b"/>
+                <pattern value = "\bchar8_t\b"/>
+                <pattern value = "\bchar16_t\b"/>
+                <pattern value = "\bchar32_t\b"/>
+                <pattern value = "\bclass\b"/>
+                <pattern value = "\bcompl\b"/>
+                <pattern value = "\bconcept\b"/>
+                <pattern value = "\bconst\b"/>
+                <pattern value = "\bconsteval\b"/>
+                <pattern value = "\bconstexpr\b"/>
+                <pattern value = "\bconstinit\b"/>
+                <pattern value = "\bconst_cast\b"/>
+                <pattern value = "\bcontinue\b"/>
+                <pattern value = "\bco_await\b"/>
+                <pattern value = "\bco_return\b"/>
+                <pattern value = "\bco_yield\b"/>
+                <pattern value = "\bdecltype\b"/>
+                <pattern value = "\bdefault\b"/>
+                <pattern value = "\bdelete\b"/>
+                <pattern value = "\bdo\b"/>
+                <pattern value = "\bdouble\b"/>
+                <pattern value = "\bdynamic_cast\b"/>
+                <pattern value = "\belse\b"/>
+                <pattern value = "\benum\b"/>
+                <pattern value = "\bexplicit\b"/>
+                <pattern value = "\bexport\b"/>
+                <pattern value = "\bextern\b"/>
+                <pattern value = "\bfalse\b"/>
+                <pattern value = "\bfloat\b"/>
+                <pattern value = "\bfor\b"/>
+                <pattern value = "\bfriend\b"/>
+                <pattern value = "\bgoto\b"/>
+                <pattern value = "\bif\b"/>
+                <pattern value = "\binline\b"/>
+                <pattern value = "\bint\b"/>
+                <pattern value = "\blong\b"/>
+                <pattern value = "\bmutable\b"/>
+                <pattern value = "\bnamespace\b"/>
+                <pattern value = "\bnew\b"/>
+                <pattern value = "\bnoexcept\b"/>
+                <pattern value = "\bnot\b"/>
+                <pattern value = "\bnot_eq\b"/>
+                <pattern value = "\bnullptr\b"/>
+                <pattern value = "\boperator\b"/>
+                <pattern value = "\bor\b"/>
+                <pattern value = "\bor_eq\b"/>
+                <pattern value = "\bprivate\b"/>
+                <pattern value = "\bprotected\b"/>
+                <pattern value = "\bpublic\b"/>
+                <pattern value = "\breflexpr\b"/>
+                <pattern value = "\bregister\b"/>
+                <pattern value = "\breinterpret_cast\b"/>
+                <pattern value = "\brequires\b"/>
+                <pattern value = "\breturn\b"/>
+                <pattern value = "\bshort\b"/>
+                <pattern value = "\bsigned\b"/>
+                <pattern value = "\bsizeof\b"/>
+                <pattern value = "\bstatic\b"/>
+                <pattern value = "\bstatic_assert\b"/>
+                <pattern value = "\bstatic_cast\b"/>
+                <pattern value = "\bstruct\b"/>
+                <pattern value = "\bswitch\b"/>
+                <pattern value = "\btemplate\b"/>
+                <pattern value = "\bthis\b"/>
+                <pattern value = "\bthread_local\b"/>
+                <pattern value = "\bthrow\b"/>
+                <pattern value = "\btrue\b"/>
+                <pattern value = "\btry\b"/>
+                <pattern value = "\btypedef\b"/>
+                <pattern value = "\btypeid\b"/>
+                <pattern value = "\btypename\b"/>
+                <pattern value = "\bunion\b"/>
+                <pattern value = "\bunsigned\b"/>
+                <pattern value = "\busing\b"/>
+                <pattern value = "\bvirtual\b"/>
+                <pattern value = "\bvoid\b"/>
+                <pattern value = "\bvolatile\b"/>
+                <pattern value = "\bwchar_t\b"/>
+                <pattern value = "\bwhile\b"/>
+                <pattern value = "\bxor\b"/>
+                <pattern value = "\xor_eq\b"/>
+                <format foreground="#CC7832" font_weight="400"/>
+            </rule>
+            <!-- Многострочный комментарий -->
+            <rule>  
+                <begin_pattern value = "/\*"/>
+                <end_pattern value = "\*/"/>
+                <format foreground="#808080" font_weight="400"/>
+            </rule>
+        </syntax>
+        <syntax id="dart" name="Язык программирования Dart" ext_list="dart">
+            <!-- Однострочный комментарий -->
+            <rule>
+                <pattern value = "//[^\n]*"/>
+                <format foreground="#808080" font_weight="50"/>
+            </rule>
+            <rule>
+                <pattern value = "\\b[A-Za-z0-9_]+(?=\\()"/>
+                <format foreground="#555555" font_weight="50"/>
+            </rule>
+            
+        </syntax>
+    </syntaxes>    
+</settings>
