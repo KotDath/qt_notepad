@@ -28,11 +28,7 @@ QTabBar::tab::selected{
 
 QTabBar::close-button{
     image: url(:/close_button.png);
-    margin-right:4px; alignment:left
-}
-
-QTabBar::close-button::hover{
-    image: url(:/not_saved_button.png);
+    margin-right:4px;
 }
 
 QTabBar QToolButton {

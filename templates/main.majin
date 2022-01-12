@@ -117,8 +117,115 @@
                 <format foreground="#808080" font_weight="50"/>
             </rule>
             <rule>
-                <pattern value = "\\b[A-Za-z0-9_]+(?=\\()"/>
-                <format foreground="#555555" font_weight="50"/>
+                <pattern value = "\babstract\b"/>
+                <pattern value = "\belse\b"/>
+                <pattern value = "\bimport\b"/>
+                <pattern value = "\bshow\b"/>
+                <pattern value = "\bas\b"/>
+                <pattern value = "\benum\b"/>
+                <pattern value = "\bin\b"/>
+                <pattern value = "\bstatic\b"/>
+                <pattern value = "\bassert\b"/>
+                <pattern value = "\bexport\b"/>
+                <pattern value = "\binterface\b"/>
+                <pattern value = "\bsuper\b"/>
+                <pattern value = "\basync\b"/>
+                <pattern value = "\bextends\b"/>
+                <pattern value = "\bis\b"/>
+                <pattern value = "\bswitch\b"/>
+                <pattern value = "\bawait\b"/>
+                <pattern value = "\bextension\b"/>
+                <pattern value = "\blate\b"/>
+                <pattern value = "\bsync\b"/>
+                <pattern value = "\bbreak\b"/>
+                <pattern value = "\bexternal\b"/>
+                <pattern value = "\blibrary\b"/>
+                <pattern value = "\bthis\b"/>
+                <pattern value = "\bcase\b"/>
+                <pattern value = "\bfactory\b"/>
+                <pattern value = "\bmixin\b"/>
+                <pattern value = "\bthrow\b"/>
+                <pattern value = "\bcatch\b"/>
+                <pattern value = "\bfalse\b"/>
+                <pattern value = "\bnew\b"/>
+                <pattern value = "\btrue\b"/>
+                <pattern value = "\bclass\b"/>
+                <pattern value = "\bfinal\b"/>
+                <pattern value = "\bnull\b"/>
+                <pattern value = "\btry\b"/>
+                <pattern value = "\bconst\b"/>
+                <pattern value = "\bfinally\b"/>
+                <pattern value = "\bon\b"/>
+                <pattern value = "\btypedef\b"/>
+                <pattern value = "\bcontinue\b"/>
+                <pattern value = "\bfor\b"/>
+                <pattern value = "\boperator\b"/>
+                <pattern value = "\bvar\b"/>
+                <pattern value = "\bcovariant\b"/>
+                <pattern value = "\bFunction\b"/>
+                <pattern value = "\bpart\b"/>
+                <pattern value = "\bvoid\b"/>
+                <pattern value = "\bdefault\b"/>
+                <pattern value = "\bget\b"/>
+                <pattern value = "\brequired\b"/>
+                <pattern value = "\bwhile\b"/>
+                <pattern value = "\bdeferred\b"/>
+                <pattern value = "\bhide\b"/>
+                <pattern value = "\brethrow\b"/>
+                <pattern value = "\bwith\b"/>
+                <pattern value = "\bdo\b"/>
+                <pattern value = "\bif\b"/>
+                <pattern value = "\breturn\b"/>
+                <pattern value = "\byield\b"/>
+                <pattern value = "\bdynamic\b"/>
+                <pattern value = "\bimplements\b"/>
+                <pattern value = "\bset\b"/>
+                <format foreground="#CC7832" font_weight="400"/>
+            </rule>
+            
+        </syntax>
+
+        <syntax id="python" name="Язык программирования Python" ext_list="py">
+            <!-- Однострочный комментарий -->
+            <rule>
+                <pattern value = "#[^\n]*"/>
+                <format foreground="#808080" font_weight="50"/>
+            </rule>
+            <rule>
+                <pattern value = "\band\b"/>
+                <pattern value = "\bas\b"/>
+                <pattern value = "\bassert\b"/>
+                <pattern value = "\bbreak\b"/>
+                <pattern value = "\bclass\b"/>
+                <pattern value = "\bcontinue\b"/>
+                <pattern value = "\bdef\b"/>
+                <pattern value = "\bdel\b"/>
+                <pattern value = "\belif\b"/>
+                <pattern value = "\belse\b"/>
+                <pattern value = "\bexcept\b"/>
+                <pattern value = "\bFalse\b"/>
+                <pattern value = "\bfinally\b"/>
+                <pattern value = "\bfor\b"/>
+                <pattern value = "\bfrom\b"/>
+                <pattern value = "\bglobal\b"/>
+                <pattern value = "\bif\b"/>
+                <pattern value = "\bimport\b"/>
+                <pattern value = "\bin\b"/>
+                <pattern value = "\bis\b"/>
+                <pattern value = "\blambda\b"/>
+                <pattern value = "\bNone\b"/>
+                <pattern value = "\bnonlocal\b"/>
+                <pattern value = "\bnot\b"/>
+                <pattern value = "\bor\b"/>
+                <pattern value = "\bpass\b"/>
+                <pattern value = "\braise\b"/>
+                <pattern value = "\breturn\b"/>
+                <pattern value = "\bTrue\b"/>
+                <pattern value = "\btry\b"/>
+                <pattern value = "\bwhile\b"/>
+                <pattern value = "\bwith\b"/>
+                <pattern value = "\byield\b"/>
+                <format foreground="#CC7832" font_weight="400"/>
             </rule>
             
         </syntax>

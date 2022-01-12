@@ -15,6 +15,11 @@
         <file alias="right_arrow_button.png">src/images/arrows/right_arrow_button.png</file>
         <file alias="right_arrow_button_hover.png">src/images/arrows/right_arrow_button_hover.png</file>
 
+        <file alias="new_file.png">src/images/new_file.png</file>
+        <file alias="open_file.png">src/images/open_file.png</file>
+        <file alias="save_file.png">src/images/save_file.png</file>
+        <file alias="save_all_files.png">src/images/save_all_files.png</file>
+
         <file alias="logo.png">src/images/logo.png</file>
         <file>src/styles/text_edit.qss</file>
         <file>src/styles/tab_widget.qss</file>

@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), currentEdit(nullptr), modelNames(), highlighter(new Highlighter{nullptr, "../qt_notepad/templates/main.majin"}) {
+    : QMainWindow(parent), currentEdit(nullptr), highlighter(new Highlighter{nullptr, "../qt_notepad/templates/main.majin"}) {
 
     auto mainWidget = new QWidget{this};
     setCentralWidget(mainWidget);
@@ -30,8 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
     auto addFileButton = new QPushButton{additionalButtons};
     addFileButton->setStyleSheet("QPushButton {border: 0px; image: url(:/add_file_button.png);} QPushButton::hover{image: url(:/add_file_button_hover.png);}");
     addFileButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    connect(addFileButton, &QPushButton::pressed, tabWidget, [this]() {tabWidget->addEdit();});
-    connect(addFileButton, &QPushButton::pressed, this, [this]() {addFile();});
+    connect(addFileButton, &QPushButton::pressed, tabWidget, [this]() {tabWidget->addEmpty();});
 
 
 
@@ -44,25 +43,11 @@ MainWindow::MainWindow(QWidget *parent)
     horizontalAdditionalLayout->addWidget(allFilesButton);
 
 
-    connect(tabWidget->tabBar(), &QTabBar::tabCloseRequested, this, &MainWindow::removeFile);
+    connect(tabWidget->tabBar(), &QTabBar::tabCloseRequested, tabWidget, &EditorTabWidget::removeTab);
     connect(tabWidget, &QTabWidget::currentChanged, this, &MainWindow::setCurrentEdit);
     tabWidget->setCornerWidget(additionalButtons, Qt::TopRightCorner);
 
     generateMenu();
-
-
-
-
-    auto dock = new CustomDockWidget(tr("Открытые файлы"), this);
-    auto customerList = new QListView(dock);
-    customerList->setModel(&modelNames);
-    dock->setWidget(customerList);
-    addDockWidget(Qt::RightDockWidgetArea, dock);
-    connect(customerList->selectionModel(),
-          SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
-          this, SLOT(selectionChanged(QItemSelection)));
-
-
 
     auto bottomWidget = new QWidget{mainWidget};
     bottomWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -90,20 +75,28 @@ void MainWindow::generateMenu() {
 QMenu* MainWindow::generateFileMenu() {
     auto fileMenu = new QMenu{tr("Файл")};
 
+    auto fileToolBar = addToolBar(tr("File"));
+
     auto newFileAction = new QAction{tr("Новый"), this};
     newFileAction->setShortcut(QKeySequence::New);
     fileMenu->addAction(newFileAction);
-    connect(newFileAction, &QAction::triggered, tabWidget, [this]() {tabWidget->addEdit();});
-    connect(newFileAction, &QAction::triggered, this, [this]() {addFile();});
+    fileToolBar->addAction(newFileAction);
+    newFileAction->setIcon(QIcon{QPixmap(":/new_file.png")});
+    connect(newFileAction, &QAction::triggered, tabWidget, [this]() {tabWidget->addEmpty();});
 
     auto openAction = new QAction{tr("Открыть"), this};
     openAction->setShortcut(QKeySequence::Open);
     fileMenu->addAction(openAction);
+    fileToolBar->addAction(openAction);
+    openAction->setIcon(QIcon{QPixmap(":/open_file.png")});
     connect(openAction, SIGNAL(triggered()), this, SLOT(openFile()));
 
     auto saveAction = new QAction{tr("Сохранить"), this};
     saveAction->setShortcut(QKeySequence::Save);
     fileMenu->addAction(saveAction);
+    fileToolBar->addAction(saveAction);
+    saveAction->setIcon(QIcon{QPixmap(":/save_file.png")});
+    connect(saveAction, SIGNAL(triggered()), this, SLOT(saveFile()));
 
     auto saveAsAction = new QAction{tr("Сохранить как..."), this};
     saveAsAction->setShortcut(QKeySequence::SaveAs);
@@ -111,12 +104,14 @@ QMenu* MainWindow::generateFileMenu() {
 
     auto saveAllAction = new QAction{tr("Сохранить все"), this};
     fileMenu->addAction(saveAllAction);
+    fileToolBar->addAction(saveAllAction);
+    saveAllAction->setIcon(QIcon{QPixmap(":/save_all_files.png")});
+    connect(saveAllAction, SIGNAL(triggered()), this, SLOT(saveAllFiles()));
 
     auto closeAction = new QAction{tr("Закрыть"), this};
     closeAction->setShortcut(QKeySequence::Close);
     fileMenu->addAction(closeAction);
-    connect(closeAction, SIGNAL(triggered()), this, SLOT(removeFile()));
-    connect(closeAction, SIGNAL(triggered()), tabWidget, SLOT(closeCurrentTab()));
+    connect(closeAction, &QAction::triggered, tabWidget, [this] {tabWidget->removeTab(tabWidget->currentIndex());});
 
     auto closeAllAction = new QAction{tr("Закрыть все"), this};
     fileMenu->addAction(closeAllAction);
@@ -160,26 +155,13 @@ QMenu* MainWindow::generateViewMenu() {
 
     auto showAction = new QAction{tr("Показать проводник"), this};
     viewMenu->addAction(showAction);
+    connect(showAction, &QAction::triggered, this, &MainWindow::openFileExplorer);
 
     auto showOpenDocumentAction = new QAction{tr("Показать обозреватель открытых документов"), this};
     viewMenu->addAction(showOpenDocumentAction);
+    connect(showOpenDocumentAction, &QAction::triggered, this, &MainWindow::openedFilesExplorer);
 
     return viewMenu;
-}
-
-void MainWindow::addFile(const QString& fileName) {
-    auto fileNames = modelNames.stringList();
-    fileNames.append(fileName);
-    modelNames.setStringList(fileNames);
-}
-
-void MainWindow::removeFile() {
-    auto fileNames = modelNames.stringList();
-    int index = tabWidget->currentIndex();
-    if (index != -1) {
-        fileNames.remove(index);
-        modelNames.setStringList(fileNames);
-    }
 }
 
 void MainWindow::setCurrentEdit(int index) {
@@ -219,11 +201,44 @@ void MainWindow::cursorChanged() {
 
 void MainWindow::openFile() {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Открыть файл"),
-                                                    QDir::homePath());
+                                                    QDir::currentPath());
 
     if (fileName != "") {
         qDebug() << fileName;
         tabWidget->addEdit(fileName);
-        addFile(fileName);
+    }
+}
+
+void MainWindow::openFileExplorer() {
+    auto dock = new CustomDockWidget(tr("Файловая система"), this);
+    auto model = new QFileSystemModel{};
+    auto treeView = new QTreeView{};
+    model->setRootPath(QDir::rootPath());
+    treeView->setModel(model);
+    dock->setWidget(treeView);
+    addDockWidget(Qt::LeftDockWidgetArea, dock);
+    //connect(treeView, &QTreeView::selectionChanged);
+}
+
+void MainWindow::openedFilesExplorer() {
+    auto dock = new CustomDockWidget(tr("Открытые файлы"), this);
+    auto customerList = new QListView(dock);
+    customerList->setModel(tabWidget->getModel());
+    dock->setWidget(customerList);
+    addDockWidget(Qt::RightDockWidgetArea, dock);
+    connect(customerList->selectionModel(),
+          SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
+          this, SLOT(selectionChanged(QItemSelection)));
+}
+
+void MainWindow::saveFile() {
+    if (tabWidget->currentIndex() != -1) {
+        tabWidget->fileSaved(tabWidget->currentIndex());
+    }
+}
+
+void MainWindow::saveAllFiles() {
+    for (int i = 0; i < tabWidget->count(); ++i) {
+        tabWidget->fileSaved(i);
     }
 }

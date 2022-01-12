@@ -7,10 +7,12 @@
 #include <QMenuBar>
 #include <QFile>
 #include <QPushButton>
-#include <QStringListModel>
 #include <QListWidget>
 #include <QLabel>
 #include <QFileDialog>
+#include <QFileSystemModel>
+#include <QTreeView>
+#include <QToolBar>
 
 #include "editortabwidget.h"
 #include "customdockwidget.h"
@@ -24,14 +26,17 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 private slots:
-    void addFile(const QString& fileName = "untitled");
-    void removeFile();
     void setCurrentEdit(int index);
     void selectionChanged(const QItemSelection& newSelection);
 
     void cursorChanged();
 
     void openFile();
+    void saveFile();
+    void saveAllFiles();
+
+    void openFileExplorer();
+    void openedFilesExplorer();
 private:
     void generateMenu();
     QMenu* generateFileMenu();
@@ -41,7 +46,6 @@ private:
     EditorTabWidget* tabWidget;
     FormatTextEdit* currentEdit;
 
-    QStringListModel modelNames;
     QLabel* cursorLabel;
     Highlighter* highlighter;
 
