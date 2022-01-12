@@ -103,6 +103,10 @@
                 <pattern value = "\xor_eq\b"/>
                 <format foreground="#CC7832" font_weight="400"/>
             </rule>
+            <rule>
+                <pattern value = "#include\b"/>
+                <format foreground="#BBB529" font_weight="400"/>
+            </rule>
             <!-- Многострочный комментарий -->
             <rule>  
                 <begin_pattern value = "/\*"/>

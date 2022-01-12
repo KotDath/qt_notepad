@@ -3,6 +3,10 @@
 FormatTextEdit::FormatTextEdit(QWidget* parent, QFile* file)  : QTextEdit(parent), isSaved(false), fileLink(file) {
     QFile styleFile(":/src/styles/text_edit.qss");
     styleFile.open(QFile::ReadOnly);
+    if (fileLink) {
+        isSaved = true;
+        watcher.addPath(file->fileName());
+    }
     QString styleSheet = QLatin1String(styleFile.readAll());
 
     if (fileLink) {
@@ -23,6 +27,8 @@ FormatTextEdit::FormatTextEdit(QWidget* parent, QFile* file)  : QTextEdit(parent
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setStyleSheet(styleSheet);
     setLineWrapMode(QTextEdit::NoWrap);
+
+   connect(&watcher, SIGNAL(fileChanged(const QString&)), this, SLOT(handleFileChanged(const QString&)));
 }
 
 void FormatTextEdit::wheelEvent(QWheelEvent* e) {
@@ -75,12 +81,34 @@ QString FormatTextEdit::save() {
             fileLink->write(toPlainText().toUtf8());
             fileLink->flush();
             isSaved = true;
+            watcher.addPath(fileName);
             return fileName;
         } else {
             return "";
         }
 
         return "untitled";
+    }
+}
+
+QString FormatTextEdit::saveAs() {
+    watcher.removePath(fileLink->fileName());
+    fileLink->close();
+    delete fileLink;
+    QString fileName = QFileDialog::getSaveFileName(this,
+    tr("Сохранение файла"), "",
+    tr("Любой файл (*)"));
+
+    if (fileName != "") {
+        fileLink = new QFile(fileName);
+        fileLink->open(QIODevice::ReadWrite);
+        fileLink->write(toPlainText().toUtf8());
+        fileLink->flush();
+        isSaved = true;
+        watcher.addPath(fileName);
+        return fileName;
+    } else {
+        return "";
     }
 }
 
@@ -102,4 +130,13 @@ QString FormatTextEdit::getPathName() {
     }
 
     return "    ";
+}
+
+
+void FormatTextEdit::handleFileChanged(const QString& path) {
+    QFile file{path};
+    if (file.open(QFile::ReadWrite)) {
+        setPlainText(file.readAll());
+        file.close();
+    }
 }

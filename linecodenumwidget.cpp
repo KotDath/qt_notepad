@@ -9,7 +9,7 @@ void LineCodeNumWidget::setEdit(FormatTextEdit* edit_) {
 
 void LineCodeNumWidget::paintEvent(QPaintEvent* e) {
     QPainter painter{this};
-    painter.setFont(edit->font());
+    painter.setFont(edit->font());   
     QRect geo = this->geometry();
 
     startRow = edit->cursorForPosition(QPoint(0, 5)).blockNumber() + 1;
@@ -21,11 +21,12 @@ void LineCodeNumWidget::paintEvent(QPaintEvent* e) {
 
     painter.fillRect(0, 0, geo.width(), geo.height(), QColor(48,56,65));
 
-    qDebug() << startRow << endRow;
-
     for (int i = startRow; i <= endRow; ++i) {
         if (i == currentRow) {
             painter.fillRect(0, (i - startRow) * lineHeight - offset, geo.width(), lineHeight, QColor(76,88,99));
+            painter.setPen(QColor().fromRgb(191, 197, 208));
+        } else {
+            painter.setPen(QColor().fromRgb(122, 129, 115));
         }
 
         painter.drawText(geo.width() / 2, lineHeight * (i - startRow + 1) - lineHeight / 4 - offset, QString::number(i));
@@ -46,6 +47,5 @@ void LineCodeNumWidget::zoomChanged() {
 
 void LineCodeNumWidget::wheeled(int value) {
     update();
-    qDebug() << "Отступ" << offset;
     offset = value % lineHeight;
 }

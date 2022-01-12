@@ -7,15 +7,18 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QStringList>
+#include <QFileSystemWatcher>
 
 class Highlighter : public QSyntaxHighlighter {
     Q_OBJECT
 public:
     Highlighter(QTextDocument* parent = nullptr, const QString& fileName = "");
-    void setExtension();
+    void setExtension(const QString& fileName);
 
 protected:
     void highlightBlock(const QString& text) override;
+private slots:
+    void handleFileChanged(const QString&);
 
 private:
     struct HighlightRule {
@@ -33,7 +36,9 @@ private:
     QRegularExpression commentStartExpression;
     QRegularExpression commentEndExpression;
 
+    QFileSystemWatcher watcher;
 
+    QString currentFileName;
 };
 
 #endif // HIGHLIGHTER_H

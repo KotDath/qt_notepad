@@ -101,6 +101,7 @@ QMenu* MainWindow::generateFileMenu() {
     auto saveAsAction = new QAction{tr("Сохранить как..."), this};
     saveAsAction->setShortcut(QKeySequence::SaveAs);
     fileMenu->addAction(saveAsAction);
+    connect(saveAsAction, SIGNAL(triggered()), this, SLOT(saveAs()));
 
     auto saveAllAction = new QAction{tr("Сохранить все"), this};
     fileMenu->addAction(saveAllAction);
@@ -120,6 +121,7 @@ QMenu* MainWindow::generateFileMenu() {
     auto quitAction = new QAction{tr("Выход"), this};
     quitAction->setShortcut(QKeySequence::Quit);
     fileMenu->addAction(quitAction);
+    connect(quitAction, &QAction::triggered, this, &MainWindow::quitApp);
 
     return fileMenu;
 }
@@ -161,6 +163,7 @@ QMenu* MainWindow::generateViewMenu() {
     viewMenu->addAction(showOpenDocumentAction);
     connect(showOpenDocumentAction, &QAction::triggered, this, &MainWindow::openedFilesExplorer);
 
+
     return viewMenu;
 }
 
@@ -170,7 +173,6 @@ void MainWindow::setCurrentEdit(int index) {
         disconnect(cutAction, &QAction::triggered, currentEdit, &FormatTextEdit::cut);
         disconnect(copyAction, &QAction::triggered, currentEdit, &FormatTextEdit::copy);
         disconnect(insertAction, &QAction::triggered, currentEdit, &FormatTextEdit::paste);
-        //disconnect(deleteAction, &QAction::triggered, currentEdit, &FormatTextEdit::);
         disconnect(selectAllAction, &QAction::triggered, currentEdit, &FormatTextEdit::selectAll);
         disconnect(currentEdit, &FormatTextEdit::cursorPositionChanged, this, &MainWindow::cursorChanged);
     }
@@ -180,11 +182,16 @@ void MainWindow::setCurrentEdit(int index) {
         connect(cutAction, &QAction::triggered, currentEdit, &FormatTextEdit::cut);
         connect(copyAction, &QAction::triggered, currentEdit, &FormatTextEdit::copy);
         connect(insertAction, &QAction::triggered, currentEdit, &FormatTextEdit::paste);
-        //connect(deleteAction, &QAction::triggered, currentEdit, &FormatTextEdit::);
+        connect(deleteAction, &QAction::triggered, currentEdit, [this] {
+                    auto clipboard = QApplication::clipboard();
+                    currentEdit->cut();
+                    clipboard->clear();
+                });
         connect(selectAllAction, &QAction::triggered, currentEdit, &FormatTextEdit::selectAll);
         connect(currentEdit, &FormatTextEdit::cursorPositionChanged, this, &MainWindow::cursorChanged);
 
         highlighter->setDocument(currentEdit->document());
+        highlighter->setExtension(tabWidget->tabText(tabWidget->currentIndex()));
     } else {
         cursorLabel->setText("Строка: 1 Столбец: 1");
     }
@@ -204,7 +211,6 @@ void MainWindow::openFile() {
                                                     QDir::currentPath());
 
     if (fileName != "") {
-        qDebug() << fileName;
         tabWidget->addEdit(fileName);
     }
 }
@@ -212,12 +218,16 @@ void MainWindow::openFile() {
 void MainWindow::openFileExplorer() {
     auto dock = new CustomDockWidget(tr("Файловая система"), this);
     auto model = new QFileSystemModel{};
-    auto treeView = new QTreeView{};
+    auto treeView = new QTreeView{dock};
     model->setRootPath(QDir::rootPath());
     treeView->setModel(model);
     dock->setWidget(treeView);
+    connect(treeView, &QTreeView::doubleClicked, this, [this, model](QModelIndex index) {
+        fileExplorerSelection(index, model);
+    });
+
     addDockWidget(Qt::LeftDockWidgetArea, dock);
-    //connect(treeView, &QTreeView::selectionChanged);
+
 }
 
 void MainWindow::openedFilesExplorer() {
@@ -241,4 +251,27 @@ void MainWindow::saveAllFiles() {
     for (int i = 0; i < tabWidget->count(); ++i) {
         tabWidget->fileSaved(i);
     }
+}
+
+void MainWindow::quitApp() {
+    tabWidget->closeAllTabs();
+    close();
+}
+
+void MainWindow::saveAs() {
+    if (tabWidget->currentIndex() != -1) {
+        tabWidget->saveAs(tabWidget->currentIndex());
+    }
+}
+
+void MainWindow::fileExplorerSelection(QModelIndex index, QFileSystemModel* model) {
+    if (model->fileInfo(index).isFile()) {
+        QString filename = model->fileInfo(index).absoluteFilePath();
+        tabWidget->addEdit(filename);
+    }
+}
+
+void MainWindow::closeEvent(QCloseEvent *event) {
+    quitApp();
+    QMainWindow::closeEvent(event);
 }

@@ -13,10 +13,14 @@
 #include <QFileSystemModel>
 #include <QTreeView>
 #include <QToolBar>
+#include <QApplication>
+#include <QClipboard>
+#include <QCloseEvent>
 
 #include "editortabwidget.h"
 #include "customdockwidget.h"
 #include "highlighter.h"
+
 
 class MainWindow : public QMainWindow
 {
@@ -25,6 +29,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+protected:
+    virtual void closeEvent(QCloseEvent *event);
 private slots:
     void setCurrentEdit(int index);
     void selectionChanged(const QItemSelection& newSelection);
@@ -33,10 +39,15 @@ private slots:
 
     void openFile();
     void saveFile();
+    void saveAs();
     void saveAllFiles();
+
+    void quitApp();
 
     void openFileExplorer();
     void openedFilesExplorer();
+
+    void fileExplorerSelection(QModelIndex index, QFileSystemModel* model);
 private:
     void generateMenu();
     QMenu* generateFileMenu();

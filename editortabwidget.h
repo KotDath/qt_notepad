@@ -11,6 +11,7 @@
 #include <QTableWidget>
 #include <QDialogButtonBox>
 #include <QDialog>
+#include <QHeaderView>
 
 #include "linecodenumwidget.h"
 #include "formattextedit.h"
@@ -23,6 +24,7 @@ public:
 
     bool fileSaved(int index);
     void removeTab(int index);
+    void saveAs(int index);
 public slots:
     void addEdit(const QString& fileName);
     void addEmpty();
@@ -36,11 +38,13 @@ private:
     void setFile(int index, const QString& fileName = "untitled");
     void removeFile(int index);
 
-    QPixmap savedButton;
-    QPixmap notSavedButton;
+    QIcon savedButton;
+    QIcon notSavedButton;
     QString styleSheet;
 
     QStringListModel modelNames;
+
+    QVector<QPushButton*> closeButtons;
 };
 
 #endif // EDITORTABWIDGET_H

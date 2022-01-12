@@ -22,25 +22,37 @@ void EditorTabWidget::addEdit(const QString& fileName) {
     auto mainField = new FormatTextEdit{field, file};
     mainField->setObjectName("edit_field");
     auto numField = new LineCodeNumWidget{field};
-    numField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    numField->setMinimumWidth(50);
+    numField->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    numField->setMinimumWidth(150);
     numField->setStyleSheet("background-color: black;");
     auto layout = new QHBoxLayout{field};
     layout->setSpacing(0);
     layout->setContentsMargins(0, 0, 0, 0);
-    //layout->addWidget(numField);
+    layout->addWidget(numField);
     layout->addWidget(mainField);
-    addTab(field, fileName);
+    QFileInfo fileInfo(fileName);
+    QString shortName(fileInfo.fileName());
+    addTab(field, shortName);
     setCurrentWidget(field);
     connect(mainField, SIGNAL(fileChanged()), this, SLOT(fileChanged()));
-    addFile(fileName);
+    addFile(shortName);
 
     numField->setEdit(mainField);
     connect(mainField, &FormatTextEdit::cursorPositionChanged, numField, &LineCodeNumWidget::cursorChanged);
     connect(mainField, SIGNAL(zoomChanged()), numField, SLOT(zoomChanged()));
-    connect(mainField, SIGNAL(wheeled()), numField, SLOT(zoomChanged()));
+    connect(mainField->verticalScrollBar(), SIGNAL(valueChanged(int)), numField, SLOT(wheeled(int)));
     numField->cursorChanged();
     numField->zoomChanged();
+
+    auto closeButton = new QPushButton{};
+    closeButtons.append(closeButton);
+    closeButton->setStyleSheet("border: 0px; background-color: transparent;");
+    closeButton->setIcon(savedButton);
+
+    connect(closeButton, &QPushButton::pressed, this, [this, closeButton, mainField] {
+        removeTab(closeButtons.indexOf(closeButton));
+    });
+    tabBar()->setTabButton(currentIndex(), QTabBar::RightSide, closeButton);
 }
 
 void EditorTabWidget::addEmpty() {
@@ -67,16 +79,32 @@ void EditorTabWidget::addEmpty() {
     numField->cursorChanged();
     numField->zoomChanged();
 
+    auto closeButton = new QPushButton{};
+    closeButtons.append(closeButton);
+    closeButton->setStyleSheet("border: 0px; background-color: transparent;");
+    closeButton->setIcon(notSavedButton);
+
+    connect(closeButton, &QPushButton::pressed, this, [this, closeButton] {
+        removeTab(closeButtons.indexOf(closeButton));
+    });
+    tabBar()->setTabButton(currentIndex(), QTabBar::RightSide, closeButton);
+
 }
 
 void EditorTabWidget::closeAllTabs() {
-    QTableWidget canClose{};
+    auto dialog = new QDialog{};
+    dialog->resize(800, 600);
+    QTableWidget canClose{dialog};
+    auto header = canClose.horizontalHeader();
+    header->setSectionResizeMode(QHeaderView::Stretch);
+    canClose.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     canClose.setColumnCount(2);
     for (int i = 0; i < count(); ++i) {
         auto curWidget = widget(i);
         auto currentEdit = curWidget->findChild<FormatTextEdit*>("edit_field");
         if (currentEdit->IsSaved()) {
             removeTab(i);
+            --i;
         } else {
             canClose.insertRow(i);
             auto first = new QTableWidgetItem{currentEdit->getFileName()};
@@ -86,45 +114,42 @@ void EditorTabWidget::closeAllTabs() {
         }
     }
 
-    auto dialog = new QDialog{};
+
 
     QVBoxLayout layout{dialog};
-
-    canClose.setParent(dialog);
     layout.addWidget(&canClose);
-    dialog->resize(800, 600);
 
-    QDialogButtonBox buttons(QDialogButtonBox::Save | QDialogButtonBox::Discard);
+
+    QDialogButtonBox buttons(QDialogButtonBox::Save);
 
     connect(&buttons, &QDialogButtonBox::accepted, dialog, &QDialog::accept);
     connect(&buttons, &QDialogButtonBox::rejected, dialog, &QDialog::reject);
 
     layout.addWidget(&buttons);
-
     int ret = dialog->exec();
 
     switch (ret) {
-        case QDialog::Accepted: {
-            for (int i = 0; i < count(); ++i) {
-                bool result = fileSaved(i);
-                if (result) {
-                    QTabWidget::removeTab(i);
-                    removeFile(i);
-                    --i;
-                }
+    case QDialog::Accepted: {
+        for (int i = 0; i < count(); ++i) {
+            bool result = fileSaved(i);
+            if (result) {
+                QTabWidget::removeTab(i);
+                removeFile(i);
+                --i;
             }
-            break;
         }
-        case QDialog::Rejected:
-            for (int i = 0; i < count(); ++i) {
-                QTabWidget::removeTab(0);
-                removeFile(0);
-            }
-            break;
+        break;
+    }
+    case QDialog::Rejected: {
+        for (int i = 0; i < count(); ++i) {
+            QTabWidget::removeTab(0);
+            removeFile(0);
+        }
+        break;
         default:
             break;
+        }
     }
-
     dialog->deleteLater();
 }
 
@@ -136,23 +161,31 @@ bool EditorTabWidget::fileSaved(int index) {
         if (newFileName == "") {
             return false;
         } else {
-            setTabText(index, newFileName);
-            setFile(index, newFileName);
+            QFileInfo fileInfo(newFileName);
+            QString filename(fileInfo.fileName());
+            setTabText(index, filename);
+            setFile(index, filename);
+
+            auto closeButton = closeButtons.at(index);
+            closeButton->setIcon(savedButton);
+
             return true;
         }
 
     }
-
     return false;
 }
 
 void EditorTabWidget::fileChanged() {
     auto currentEdit = currentWidget()->findChild<FormatTextEdit*>("edit_field");
     currentEdit->setSaved(false);
+
+    auto closeButton = closeButtons.at(currentIndex());
+    closeButton->setIcon(notSavedButton);
 }
 
 void EditorTabWidget::removeTab(int index) {
-    auto currentEdit = currentWidget()->findChild<FormatTextEdit*>("edit_field");
+    auto currentEdit = widget(index)->findChild<FormatTextEdit*>("edit_field");
     if (!currentEdit->IsSaved()) {
         QMessageBox msgBox;
         msgBox.setText(QString("Текст в файле %1 был изменён.").arg(tabText(index)));
@@ -164,20 +197,33 @@ void EditorTabWidget::removeTab(int index) {
             case QMessageBox::Save: {
                 bool result = fileSaved(index);
                 if (result) {
+                    auto button = closeButtons.at(index);
+                    closeButtons.remove(index);
+                    button->deleteLater();
                     QTabWidget::removeTab(index);
                     removeFile(index);
                 }
                 break;
             }
-            case QMessageBox::Discard:
+            case QMessageBox::Discard: {
+                auto button = closeButtons.at(index);
+                closeButtons.remove(index);
+                button->deleteLater();
                 QTabWidget::removeTab(index);
                 removeFile(index);
                 break;
+            }
             case QMessageBox::Cancel:
                 break;
             default:
                 break;
         }
+    } else {
+        auto button = closeButtons.at(index);
+        closeButtons.remove(index);
+        button->deleteLater();
+        QTabWidget::removeTab(index);
+        removeFile(index);
     }
 }
 
@@ -198,5 +244,19 @@ void EditorTabWidget::removeFile(int index) {
     if (index != -1) {
         fileNames.remove(index);
         modelNames.setStringList(fileNames);
+    }
+}
+
+void EditorTabWidget::saveAs(int index) {
+    auto curWidget = widget(index);
+    auto currentEdit = curWidget->findChild<FormatTextEdit*>("edit_field");
+    QString newFileName = currentEdit->saveAs();
+    if (newFileName != "") {
+        QFileInfo fileInfo(newFileName);
+        QString filename(fileInfo.fileName());
+        setTabText(index, filename);
+        setFile(index, filename);
+        auto closeButton = closeButtons.at(index);
+        closeButton->setIcon(savedButton);
     }
 }

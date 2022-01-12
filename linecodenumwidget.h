@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QAbstractTextDocumentLayout>
 #include <QTextBlock>
+#include <QColor>
 
 #include "formattextedit.h"
 
