@@ -14,6 +14,7 @@ class Highlighter : public QSyntaxHighlighter {
 public:
     Highlighter(QTextDocument* parent = nullptr, const QString& fileName = "");
     void setExtension(const QString& fileName);
+    void clearHighlight();
 
 protected:
     void highlightBlock(const QString& text) override;

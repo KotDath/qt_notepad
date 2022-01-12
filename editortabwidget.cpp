@@ -247,7 +247,7 @@ void EditorTabWidget::removeFile(int index) {
     }
 }
 
-void EditorTabWidget::saveAs(int index) {
+QString EditorTabWidget::saveAs(int index) {
     auto curWidget = widget(index);
     auto currentEdit = curWidget->findChild<FormatTextEdit*>("edit_field");
     QString newFileName = currentEdit->saveAs();
@@ -258,5 +258,8 @@ void EditorTabWidget::saveAs(int index) {
         setFile(index, filename);
         auto closeButton = closeButtons.at(index);
         closeButton->setIcon(savedButton);
+        return newFileName;
+    } else {
+        return currentEdit->getPathName();
     }
 }

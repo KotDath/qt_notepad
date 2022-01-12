@@ -24,7 +24,7 @@ public:
 
     bool fileSaved(int index);
     void removeTab(int index);
-    void saveAs(int index);
+    QString saveAs(int index);
 public slots:
     void addEdit(const QString& fileName);
     void addEmpty();

@@ -59,9 +59,14 @@ void Highlighter::addNode(const QDomElement& elem) {
     }
 }
 
+void Highlighter::clearHighlight() {
+    rules.clear();
+    commentStartExpression.setPattern("");
+    commentEndExpression.setPattern("");
+}
+
 void Highlighter::setExtension(const QString& fileName) {
     currentFileName = fileName;
-    rules.clear();
     QFile file(fileName);
     QFileInfo fi(fileName);
     auto extension = fi.completeSuffix();
@@ -127,6 +132,7 @@ void Highlighter::handleFileChanged(const QString& path) {
         doc.setContent(QByteArray());
     } else {
         doc.setContent(&file);
+        clearHighlight();
         setExtension(currentFileName);
         rehighlight();
         file.close();

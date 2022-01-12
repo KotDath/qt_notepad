@@ -260,8 +260,11 @@ void MainWindow::quitApp() {
 
 void MainWindow::saveAs() {
     if (tabWidget->currentIndex() != -1) {
-        tabWidget->saveAs(tabWidget->currentIndex());
-    }
+        auto resultName = tabWidget->saveAs(tabWidget->currentIndex());
+        highlighter->clearHighlight();
+        highlighter->setExtension(resultName);
+        highlighter->rehighlight();
+    } 
 }
 
 void MainWindow::fileExplorerSelection(QModelIndex index, QFileSystemModel* model) {
