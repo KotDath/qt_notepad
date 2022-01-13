@@ -9,8 +9,6 @@
 #include <QMessageBox>
 #include <QStringListModel>
 #include <QTableWidget>
-#include <QDialogButtonBox>
-#include <QDialog>
 #include <QHeaderView>
 
 #include "linecodenumwidget.h"

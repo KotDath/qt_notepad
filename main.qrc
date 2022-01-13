@@ -20,6 +20,8 @@
         <file alias="save_file.png">src/images/save_file.png</file>
         <file alias="save_all_files.png">src/images/save_all_files.png</file>
 
+        <file alias="main.majin">templates/main.majin</file>
+
         <file alias="logo.png">src/images/logo.png</file>
         <file>src/styles/text_edit.qss</file>
         <file>src/styles/tab_widget.qss</file>

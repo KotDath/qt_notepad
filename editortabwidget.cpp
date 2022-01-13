@@ -92,13 +92,13 @@ void EditorTabWidget::addEmpty() {
 }
 
 void EditorTabWidget::closeAllTabs() {
-    auto dialog = new QDialog{};
+    auto dialog = new QWidget{};
     dialog->resize(800, 600);
-    QTableWidget canClose{dialog};
-    auto header = canClose.horizontalHeader();
+    auto canClose = new QTableWidget{dialog};
+    auto header = canClose->horizontalHeader();
     header->setSectionResizeMode(QHeaderView::Stretch);
-    canClose.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    canClose.setColumnCount(2);
+    canClose->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    canClose->setColumnCount(2);
     for (int i = 0; i < count(); ++i) {
         auto curWidget = widget(i);
         auto currentEdit = curWidget->findChild<FormatTextEdit*>("edit_field");
@@ -106,30 +106,40 @@ void EditorTabWidget::closeAllTabs() {
             removeTab(i);
             --i;
         } else {
-            canClose.insertRow(i);
+            canClose->insertRow(i);
             auto first = new QTableWidgetItem{currentEdit->getFileName()};
             auto second = new QTableWidgetItem{currentEdit->getPathName()};
-            canClose.setItem(i, 0, first);
-            canClose.setItem(i, 1, second);
+            canClose->setItem(i, 0, first);
+            canClose->setItem(i, 1, second);
         }
     }
 
 
 
     QVBoxLayout layout{dialog};
-    layout.addWidget(&canClose);
+    layout.addWidget(canClose);
 
+    auto buttons = new QWidget{dialog};
+    layout.addWidget(buttons);
+    auto buttonsLayout = new QHBoxLayout{buttons};
 
-    QDialogButtonBox buttons(QDialogButtonBox::Save);
+    auto acceptButton = new QPushButton{buttons};
+    acceptButton->setText("Ок");
+    buttonsLayout->addWidget(acceptButton);
+    auto rejectButton = new QPushButton{buttons};
+    buttonsLayout->addWidget(rejectButton);
+    rejectButton->setText("Не сохранять");
 
-    connect(&buttons, &QDialogButtonBox::accepted, dialog, &QDialog::accept);
-    connect(&buttons, &QDialogButtonBox::rejected, dialog, &QDialog::reject);
+    connect(rejectButton, &QPushButton::clicked, dialog, [this, dialog] {
+        for (int i = 0; i < count(); ++i) {
+            QTabWidget::removeTab(0);
+            removeFile(0);
+        }
 
-    layout.addWidget(&buttons);
-    int ret = dialog->exec();
+        dialog->deleteLater();
+    });
 
-    switch (ret) {
-    case QDialog::Accepted: {
+    connect(acceptButton, &QPushButton::clicked, dialog, [this, dialog] {
         for (int i = 0; i < count(); ++i) {
             bool result = fileSaved(i);
             if (result) {
@@ -137,20 +147,17 @@ void EditorTabWidget::closeAllTabs() {
                 removeFile(i);
                 --i;
             }
+
+            dialog->deleteLater();
         }
-        break;
+    });
+
+    if (canClose->rowCount() == 0) {
+        dialog->deleteLater();
+
+    } else {
+        dialog->show();
     }
-    case QDialog::Rejected: {
-        for (int i = 0; i < count(); ++i) {
-            QTabWidget::removeTab(0);
-            removeFile(0);
-        }
-        break;
-        default:
-            break;
-        }
-    }
-    dialog->deleteLater();
 }
 
 bool EditorTabWidget::fileSaved(int index) {

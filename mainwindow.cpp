@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), currentEdit(nullptr), highlighter(new Highlighter{nullptr, "../qt_notepad/templates/main.majin"}) {
+    : QMainWindow(parent), currentEdit(nullptr), highlighter(new Highlighter{nullptr, ":/main.majin"}) {
 
     auto mainWidget = new QWidget{this};
     setCentralWidget(mainWidget);
