@@ -129,7 +129,7 @@ QString FormatTextEdit::getPathName() {
         return fileLink->fileName();
     }
 
-    return "    ";
+    return "    "; //!!! Почему бы не {} просто
 }
 
 
