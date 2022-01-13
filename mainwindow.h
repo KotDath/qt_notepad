@@ -16,6 +16,7 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QCloseEvent>
+#include <QStatusBar>
 
 #include "editortabwidget.h"
 #include "customdockwidget.h"

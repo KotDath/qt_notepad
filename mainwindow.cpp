@@ -49,11 +49,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     generateMenu();
 
-    auto bottomWidget = new QWidget{mainWidget};
+    auto bottomWidget = new QWidget{};
+    statusBar()->addWidget(bottomWidget);
     bottomWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    statusBar()->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     bottomWidget->setFixedHeight(32);
-    bottomWidget->setStyleSheet("QWidget {background-color: rgb(199, 203, 209);}");
-    mainVerticalLayout->addWidget(bottomWidget);
+    statusBar()->setStyleSheet("QStatusBar {background-color: rgb(199, 203, 209);}");
 
     auto bottomHorizontalLayout = new QHBoxLayout{bottomWidget};
     cursorLabel = new QLabel{bottomWidget};
