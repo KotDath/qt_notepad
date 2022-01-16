@@ -122,7 +122,7 @@ QMenu* MainWindow::generateFileMenu() {
     auto quitAction = new QAction{tr("Выход"), this};
     quitAction->setShortcut(QKeySequence::Quit);
     fileMenu->addAction(quitAction);
-    connect(quitAction, &QAction::triggered, this, &MainWindow::quitApp);
+    connect(quitAction, &QAction::triggered, this, &MainWindow::close);
 
     return fileMenu;
 }
@@ -217,7 +217,8 @@ void MainWindow::openFile() {
 }
 
 void MainWindow::openFileExplorer() {
-    auto dock = new CustomDockWidget(tr("Файловая система"), this);
+    auto dock = new QDockWidget(tr("Файловая система"), this);
+    dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     auto model = new QFileSystemModel{};
     auto treeView = new QTreeView{dock};
     model->setRootPath(QDir::rootPath());
@@ -232,7 +233,8 @@ void MainWindow::openFileExplorer() {
 }
 
 void MainWindow::openedFilesExplorer() {
-    auto dock = new CustomDockWidget(tr("Открытые файлы"), this);
+    auto dock = new QDockWidget(tr("Открытые файлы"), this);
+    dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     auto customerList = new QListView(dock);
     customerList->setModel(tabWidget->getModel());
     dock->setWidget(customerList);
@@ -254,11 +256,6 @@ void MainWindow::saveAllFiles() {
     }
 }
 
-void MainWindow::quitApp() {
-    tabWidget->closeAllTabs();
-    close();
-}
-
 void MainWindow::saveAs() {
     if (tabWidget->currentIndex() != -1) {
         auto resultName = tabWidget->saveAs(tabWidget->currentIndex());
@@ -276,6 +273,12 @@ void MainWindow::fileExplorerSelection(QModelIndex index, QFileSystemModel* mode
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
-    quitApp();
-    QMainWindow::closeEvent(event);
+    int result = tabWidget->closeAllTabs();
+    qDebug() << result;
+    if (result != 0) {
+        event->accept();
+        QMainWindow::closeEvent(event);
+    } else {
+        event->ignore();
+    }
 }

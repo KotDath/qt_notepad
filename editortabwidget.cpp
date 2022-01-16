@@ -91,8 +91,8 @@ void EditorTabWidget::addEmpty() {
 
 }
 
-void EditorTabWidget::closeAllTabs() {
-    auto dialog = new QWidget{};
+int EditorTabWidget::closeAllTabs() {
+    auto dialog = new QDialog{};
     dialog->resize(800, 600);
     auto canClose = new QTableWidget{dialog};
     auto header = canClose->horizontalHeader();
@@ -114,7 +114,7 @@ void EditorTabWidget::closeAllTabs() {
         }
     }
 
-
+    int result = 0;
 
     QVBoxLayout layout{dialog};
     layout.addWidget(canClose);
@@ -130,16 +130,17 @@ void EditorTabWidget::closeAllTabs() {
     buttonsLayout->addWidget(rejectButton);
     rejectButton->setText("Не сохранять");
 
-    connect(rejectButton, &QPushButton::clicked, dialog, [this, dialog] {
+    connect(rejectButton, &QPushButton::clicked, dialog, [this, dialog, &result] {
         for (int i = 0; i < count(); ++i) {
             QTabWidget::removeTab(0);
             removeFile(0);
         }
 
-        dialog->deleteLater();
+        result = 1;
     });
+    connect(rejectButton, &QPushButton::clicked, dialog, &QDialog::close);
 
-    connect(acceptButton, &QPushButton::clicked, dialog, [this, dialog] {
+    connect(acceptButton, &QPushButton::clicked, dialog, [this, dialog, &result] {
         for (int i = 0; i < count(); ++i) {
             bool result = fileSaved(i);
             if (result) {
@@ -147,16 +148,18 @@ void EditorTabWidget::closeAllTabs() {
                 removeFile(i);
                 --i;
             }
-
-            dialog->deleteLater();
         }
+
+        result = 2;
     });
 
+    connect(acceptButton, &QPushButton::clicked, dialog, &QDialog::close);
+
     if (canClose->rowCount() == 0) {
-        dialog->deleteLater();
 
     } else {
-        dialog->show();
+        dialog->exec();
+        return result;
     }
 }
 

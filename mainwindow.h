@@ -17,9 +17,9 @@
 #include <QClipboard>
 #include <QCloseEvent>
 #include <QStatusBar>
+#include <QDockWidget>
 
 #include "editortabwidget.h"
-#include "customdockwidget.h"
 #include "highlighter.h"
 
 
@@ -42,8 +42,6 @@ private slots:
     void saveFile();
     void saveAs();
     void saveAllFiles();
-
-    void quitApp();
 
     void openFileExplorer();
     void openedFilesExplorer();

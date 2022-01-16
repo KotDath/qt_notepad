@@ -26,7 +26,7 @@ public:
 public slots:
     void addEdit(const QString& fileName);
     void addEmpty();
-    void closeAllTabs();
+    int closeAllTabs();
 
 private slots:
     void fileChanged();
